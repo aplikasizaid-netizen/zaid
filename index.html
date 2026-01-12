@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Manajemen Santri • Penilaian • Tahfiz (Semua Kitab)</title>
+<style>
+  :root{
+    --bg:#f6f8fa;
+    --card:#ffffff;
+    --muted:#6b7280;
+    --accent:#3b82f6;
+    --accent-2:#2563eb;
+    --danger:#ef4444;
+    --success:#16a34a;
+    --soft-border:#e6eef6;
+    --glass: rgba(255,255,255,0.6);
+    --shadow: 0 6px 18px rgba(15,23,42,0.06);
+    --radius:12px;
+    --transition-fast: 140ms;
+    --transition-medium: 220ms;
+  }
+
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial; font-size:15px; line-height:1.5; color:#0f1724; background:var(--bg); -webkit-font-smoothing:antialiased}
+  header{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;padding:18px 22px;box-shadow:0 6px 18px rgba(11,94,215,0.08)}
+  header h1{margin:0;font-size:18px;font-weight:600}
+
+  .container{max-width:1180px;margin:20px auto;padding:18px}
+  .grid{display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start}
+  .card{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);border:1px solid var(--soft-border)}
+  h2{font-size:16px;margin:0 0 10px 0;color:#0b1220}
+  .small{font-size:13px;color:var(--muted)}
+
+  input,select,textarea,button{font-size:14px}
+  input,select{padding:10px;border-radius:10px;border:1px solid var(--soft-border);background:#fbfdff}
+  button{transition:all var(--transition-fast) ease;border-radius:10px;padding:8px 12px;border:0;cursor:pointer;background:var(--accent);color:#fff;font-weight:600}
+  button:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(11,94,215,0.06)}
+  .btn-ghost{background:#fff;border:1px solid #e9f0ff;color:var(--accent);padding:7px 10px;border-radius:10px}
+  .btn-small{padding:6px 8px;border-radius:8px;border:1px solid #eef4fb;background:#fff;color:var(--accent)}
+  .btn-note{background:#fff;border:1px solid #e9f0ff;color:#0b1220;padding:6px 8px;border-radius:8px}
+
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  thead th{background:linear-gradient(180deg,#fbfdff,#f8fbff);padding:10px;border-bottom:1px solid var(--soft-border);color:var(--muted);font-weight:700;text-align:left}
+  tbody td{padding:10px;border-bottom:1px solid #f3f6f9}
+  tbody tr:hover{background:rgba(59,130,246,0.03)}
+
+  #santri-table thead th:nth-child(1){width:55%}
+  #santri-table thead th:nth-child(2){width:25%}
+  #santri-table thead th:nth-child(3){width:20%}
+
+  .juz-detail-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px}
+  .juz-pager{display:flex;gap:8px;align-items:center;margin-left:auto}
+  .juz-page{padding:8px 10px;border-radius:10px;border:1px solid #e6eef6;background:#fff;cursor:pointer;transition:transform var(--transition-fast) ease, background var(--transition-fast) ease}
+  .juz-page.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;border-color:transparent;transform:scale(1.02)}
+
+  .block-table{width:100%;border-collapse:collapse;margin-top:8px}
+  .block-table th,.block-table td{padding:8px;border:1px solid #eef4fb;text-align:left}
+  .color-dot{width:14px;height:14px;border-radius:4px;display:inline-block;margin-right:8px;box-shadow:0 1px 0 rgba(0,0,0,0.04)}
+  .status-done{color:var(--success);font-weight:700}
+  .status-todo{color:var(--muted);font-weight:600}
+
+  .progress{height:12px;background:#eef6ff;border-radius:999px;overflow:hidden}
+  .progress i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width var(--transition-medium) ease}
+
+  .color-dot[data-color="0"]{background:#f2c94c}
+  .color-dot[data-color="1"]{background:#60a5fa}
+  .color-dot[data-color="2"]{background:#6ee7b7}
+  .color-dot[data-color="3"]{background:#ffb085}
+  .color-dot[data-color="4"]{background:#cdb4ff}
+
+  .btn-open-juz{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:1px solid #e6eef6;background:#fff;color:var(--accent);cursor:pointer;transition:transform var(--transition-fast) ease, background var(--transition-fast) ease}
+  .btn-open-juz:hover{transform:translateY(-2px)}
+  .btn-open-juz.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;border-color:transparent;transform:scale(1.02)}
+  .btn-open-juz .chev{display:inline-block;transition:transform var(--transition-fast) ease}
+  .btn-open-juz.active .chev{transform:rotate(180deg)}
+
+  #juz-detail-area{transition:opacity var(--transition-medium) ease, transform var(--transition-medium) ease}
+  #juz-detail-area.hidden{opacity:0;transform:translateY(-6px);pointer-events:none}
+  #juz-detail-area.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+
+  @media(max-width:980px){.grid{grid-template-columns:1fr;padding:12px}; .juz-pager{width:100%;justify-content:flex-start}}
+</style>
+</head>
+<body>
+<header><h1>Manajemen Santri • Penilaian • Tahfiz</h1></header>
+
+<div class="container">
+  <div class="grid">
+    <main>
+      <!-- Santri -->
+      <section class="card" id="santri-section">
+        <h2>Daftar Santri</h2>
+        <div class="small">Tambah, cari, dan batasi tampilan</div>
+
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+          <input id="santri-nama" type="text" placeholder="Nama santri" style="flex:1" />
+          <input id="santri-kelas" type="text" placeholder="Kelas" style="width:140px" />
+          <button id="add-santri" type="button">Tambah</button>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input id="santri-search" type="text" placeholder="Cari nama atau kelas..." style="flex:1" />
+          <label class="small">Tampilkan</label>
+          <select id="santri-page-size" style="width:90px">
+            <option value="5">5</option><option value="10" selected>10</option><option value="20">20</option>
+          </select>
+          <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+            <button id="santri-prev" class="btn-ghost" type="button">Prev</button>
+            <div id="santri-page-info" class="small">1 / 1</div>
+            <button id="santri-next" class="btn-ghost" type="button">Next</button>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;overflow:auto">
+          <table id="santri-table"><thead><tr><th>Nama</th><th>Kelas</th><th>Aksi</th></tr></thead><tbody></tbody></table>
+        </div>
+      </section>
+
+      <div style="height:12px"></div>
+
+      <!-- Kitab: Tajwid, Ushul Fiqh, Nahwu Sharaf -->
+      <section class="card">
+        <h2>Penilaian Kitab</h2>
+
+        <!-- Tajwid -->
+        <div class="kitab" data-kitab="Tajwid" style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><strong>Kitab Tajwid</strong><div class="small">Penilaian bertahap</div></div>
+            <div class="small">Tajwid</div>
+          </div>
+          <div style="margin-top:8px"><label class="small">Pilih Santri</label><select class="santri-select"></select></div>
+          <div class="stage-list" data-for="Tajwid-stages"></div>
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="score-btn" data-stage="1">Tahap 1</button>
+            <button class="score-btn" data-stage="2">Tahap 2</button>
+            <button class="score-btn" data-stage="3">Tahap 3</button>
+            <button class="btn-ghost btn-view" data-view="Tajwid">Lihat</button>
+          </div>
+        </div>
+
+        <!-- Ushul Fiqh -->
+        <div class="kitab" data-kitab="Ushul Fiqh" style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><strong>Kitab Ushul Fiqh</strong><div class="small">Penilaian bertahap</div></div>
+            <div class="small">Ushul Fiqh</div>
+          </div>
+          <div style="margin-top:8px"><label class="small">Pilih Santri</label><select class="santri-select"></select></div>
+          <div class="stage-list" data-for="Ushul Fiqh-stages"></div>
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="score-btn" data-stage="1">Tahap 1</button>
+            <button class="score-btn" data-stage="2">Tahap 2</button>
+            <button class="score-btn" data-stage="3">Tahap 3</button>
+            <button class="btn-ghost btn-view" data-view="Ushul Fiqh">Lihat</button>
+          </div>
+        </div>
+
+        <!-- Nahwu Sharaf -->
+        <div class="kitab" data-kitab="Nahwu Sharaf" style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><strong>Kitab Nahwu Sharaf</strong><div class="small">Penilaian bertahap</div></div>
+            <div class="small">Nahwu Sharaf</div>
+          </div>
+          <div style="margin-top:8px"><label class="small">Pilih Santri</label><select class="santri-select"></select></div>
+          <div class="stage-list" data-for="Nahwu Sharaf-stages"></div>
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="score-btn" data-stage="1">Tahap 1</button>
+            <button class="score-btn" data-stage="2">Tahap 2</button>
+            <button class="score-btn" data-stage="3">Tahap 3</button>
+            <button class="btn-ghost btn-view" data-view="Nahwu Sharaf">Lihat</button>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <h3>Riwayat Penilaian</h3>
+          <div style="max-height:220px;overflow:auto">
+            <table id="penilaian-table"><thead><tr><th>Kitab</th><th>Santri</th><th>Tahap</th><th>Catatan</th><th>Waktu</th><th>Aksi</th></tr></thead><tbody></tbody></table>
+          </div>
+        </div>
+      </section>
+
+      <div style="height:12px"></div>
+
+      <!-- Tahfiz -->
+      <section class="card">
+        <h2>5. Lembar Kontrol Tahfiz (Juz & Blok)</h2>
+        <div class="small">Batasi tampilan halaman agar lebih rapi.</div>
+
+        <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <label class="small" style="min-width:80px">Pilih Santri</label>
+          <select id="tahfiz-santri" style="flex:1"></select>
+        </div>
+
+        <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input id="new-juz-number" type="number" min="1" max="30" placeholder="Nomor Juz" style="width:120px" />
+          <input id="new-juz-pages" type="number" min="1" max="200" placeholder="Jumlah halaman (default 20)" style="width:160px" />
+          <button id="create-juz">Buat Juz</button>
+          <button id="remove-juz" class="btn-ghost">Hapus Juz Terpilih</button>
+        </div>
+
+        <div class="small" style="margin-top:8px">Warna blok: Merah, Biru, Hijau, Oranye, Ungu</div>
+
+        <div id="juz-list" class="juz-list" style="margin-top:12px"></div>
+
+        <div style="margin-top:12px">
+          <h3>Detail Halaman & Blok</h3>
+
+          <div class="juz-detail-controls">
+            <div style="display:flex;gap:8px;align-items:center">
+              <label class="small">Halaman per tampilan</label>
+              <select id="pages-per-view">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="5" selected>5</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+
+            <div class="juz-pager">
+              <button id="pages-prev" class="btn-ghost">Prev</button>
+              <div class="small">Kelompok: <span id="pages-group-info">-</span></div>
+              <button id="pages-next" class="btn-ghost">Next</button>
+              <div style="display:flex;gap:6px;align-items:center;margin-left:8px">
+                <input id="jump-page" type="number" placeholder="Lompat halaman" style="width:120px;padding:8px;border-radius:8px;border:1px solid var(--soft-border)" />
+                <button id="jump-go" class="btn-ghost">Lompat</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="juz-detail-area" class="hidden" style="margin-top:10px"></div>
+        </div>
+
+        <div style="margin-top:12px">
+          <h3>Ringkasan Progress</h3>
+          <div class="progress" style="height:12px;background:#eef6ff;border-radius:999px;overflow:hidden"><i id="tahfiz-progress" style="display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2))"></i></div>
+          <div class="small" style="margin-top:6px">Total blok selesai: <span id="blocks-done">0</span> / <span id="blocks-total">0</span></div>
+        </div>
+      </section>
+    </main>
+
+    <aside>
+      <div class="card">
+        <h2>Ringkasan Cepat</h2>
+        <div class="small">Jumlah Santri: <span id="count-santri">0</span></div>
+        <div class="small">Total Penilaian: <span id="count-penilaian">0</span></div>
+        <div class="small">Total Blok Tahfizd: <span id="count-blok">0</span></div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<footer style="text-align:center;padding:14px;color:var(--muted)">Data disimpan di localStorage</footer>
+
+<script>
+/* ===== Data keys and helpers ===== */
+const LS_SANTRI = 'ms_santri_v1';
+const LS_PENILAIAN = 'ms_penilaian_v1';
+const LS_TAHFIZ = 'ms_tahfiz_v2';
+
+const BLOCK_COLORS = [
+  {name:'Merah', color:'#f2c94c'},
+  {name:'Biru', color:'#60a5fa'},
+  {name:'Hijau', color:'#6ee7b7'},
+  {name:'Oranye', color:'#ffb085'},
+  {name:'Ungu', color:'#cdb4ff'}
+];
+
+const loadJSON = (k,fallback)=>{ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):fallback }catch(e){return fallback} };
+const saveJSON = (k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const uid = (p='id')=>p+'_'+Math.random().toString(36).slice(2,9);
+const now = ()=>new Date().toLocaleString();
+const escapeHtml = s => s? String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') : '';
+
+/* ===== State ===== */
+let santri = loadJSON(LS_SANTRI, []);
+let penilaian = loadJSON(LS_PENILAIAN, []);
+let tahfiz = loadJSON(LS_TAHFIZ, {});
+let santriPage = 1;
+const pageViewState = {}; // { sid: { juzNumber: { startIndex, pagesPerView } } }
+
+/* ===== Elements ===== */
+const santriNamaInput = document.getElementById('santri-nama');
+const santriKelasInput = document.getElementById('santri-kelas');
+const addBtn = document.getElementById('add-santri');
+const santriTableBody = document.querySelector('#santri-table tbody');
+const searchInput = document.getElementById('santri-search');
+const pageSizeSelect = document.getElementById('santri-page-size');
+const prevBtn = document.getElementById('santri-prev');
+const nextBtn = document.getElementById('santri-next');
+const pageInfo = document.getElementById('santri-page-info');
+const penilaianTableBody = document.querySelector('#penilaian-table tbody');
+
+const tahfizSelect = document.getElementById('tahfiz-santri');
+const createJuzBtn = document.getElementById('create-juz');
+const removeJuzBtn = document.getElementById('remove-juz');
+const newJuzNumber = document.getElementById('new-juz-number');
+const newJuzPages = document.getElementById('new-juz-pages');
+const juzListEl = document.getElementById('juz-list');
+const juzDetailArea = document.getElementById('juz-detail-area');
+const blocksDoneEl = document.getElementById('blocks-done');
+const blocksTotalEl = document.getElementById('blocks-total');
+const tahfizProgressBar = document.getElementById('tahfiz-progress');
+
+const pagesPerViewSelect = document.getElementById('pages-per-view');
+const pagesPrevBtn = document.getElementById('pages-prev');
+const pagesNextBtn = document.getElementById('pages-next');
+const pagesGroupInfo = document.getElementById('pages-group-info');
+const jumpPageInput = document.getElementById('jump-page');
+const jumpGoBtn = document.getElementById('jump-go');
+
+/* ===== Helpers ===== */
+function getCompletedStages(sid,kitab){ return penilaian.filter(p=>p.santriId===sid && p.kitab===kitab).map(p=>p.tahap).sort((a,b)=>a-b); }
+function hasCompletedStageAtLeast(sid,kitab,stage){ return penilaian.some(p=>p.santriId===sid && p.kitab===kitab && p.tahap>=stage); }
+function hasExactStage(sid,kitab,stage){ return penilaian.some(p=>p.santriId===sid && p.kitab===kitab && p.tahap===stage); }
+
+function ensureTahfizFor(sid){ tahfiz[sid] = tahfiz[sid] || []; return tahfiz[sid]; }
+function createJuzForSantri(sid,juzNumber,pagesCount){
+  if(!sid) return {ok:false,msg:'Pilih santri.'};
+  const list = ensureTahfizFor(sid);
+  if(list.some(j=>j.juzNumber===juzNumber)) return {ok:false,msg:'Juz sudah ada.'};
+  const pages=[];
+  for(let p=1;p<=pagesCount;p++){
+    const blocks = BLOCK_COLORS.map((c,idx)=>({id:uid('b'),colorIndex:idx,status:'todo',note:''}));
+    pages.push({pageNumber:p,blocks});
+  }
+  list.push({juzNumber,pages});
+  saveJSON(LS_TAHFIZ,tahfiz);
+  return {ok:true};
+}
+function removeJuzForSantri(sid,juzNumber){ if(!sid) return false; tahfiz[sid] = (tahfiz[sid]||[]).filter(j=>j.juzNumber!==juzNumber); saveJSON(LS_TAHFIZ,tahfiz); return true; }
+function toggleBlockStatus(sid,juzNumber,pageNumber,blockId){
+  const list = tahfiz[sid]||[]; const juz = list.find(j=>j.juzNumber===juzNumber); if(!juz) return;
+  const page = juz.pages.find(p=>p.pageNumber===pageNumber); if(!page) return;
+  const block = page.blocks.find(b=>b.id===blockId); if(!block) return;
+  block.status = (block.status==='done') ? 'todo' : 'done';
+  saveJSON(LS_TAHFIZ,tahfiz);
+}
+function setBlockNote(sid,juzNumber,pageNumber,blockId,note){
+  const list = tahfiz[sid]||[]; const juz = list.find(j=>j.juzNumber===juzNumber); if(!juz) return;
+  const page = juz.pages.find(p=>p.pageNumber===pageNumber); if(!page) return;
+  const block = page.blocks.find(b=>b.id===blockId); if(!block) return;
+  block.note = note; saveJSON(LS_TAHFIZ,tahfiz);
+}
+function getTahfizSummary(sid){
+  const list = tahfiz[sid]||[]; let total=0,done=0; list.forEach(j=>j.pages.forEach(p=>p.blocks.forEach(b=>{ total++; if(b.status==='done') done++; }))); return {total,done};
+}
+
+/* Page view state helpers */
+function ensurePageViewState(sid,juzNumber){
+  pageViewState[sid] = pageViewState[sid] || {};
+  pageViewState[sid][juzNumber] = pageViewState[sid][juzNumber] || { startIndex: 0, pagesPerView: parseInt(pagesPerViewSelect.value,10) || 5 };
+  return pageViewState[sid][juzNumber];
+}
+function setPagesPerViewFor(sid,juzNumber,ppv){
+  ensurePageViewState(sid,juzNumber).pagesPerView = ppv;
+  ensurePageViewState(sid,juzNumber).startIndex = 0;
+}
+
+/* ===== Render functions ===== */
+function renderSantri(){
+  const q=(searchInput.value||'').trim().toLowerCase();
+  const pageSize=parseInt(pageSizeSelect.value,10)||10;
+  const filtered = santri.filter(s=>{ if(!q) return true; return (s.nama||'').toLowerCase().includes(q) || (s.kelas||'').toLowerCase().includes(q); });
+  const total = filtered.length; const totalPages = Math.max(1,Math.ceil(total/pageSize));
+  if(santriPage>totalPages) santriPage=totalPages;
+  const start=(santriPage-1)*pageSize; const pageItems = filtered.slice(start,start+pageSize);
+  santriTableBody.innerHTML='';
+  pageItems.forEach(s=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${escapeHtml(s.nama)}</td><td>${escapeHtml(s.kelas)}</td><td><button class="btn-ghost btn-delete" data-id="${s.id}" type="button">Hapus</button></td>`; santriTableBody.appendChild(tr); });
+  pageInfo.textContent = santriPage + ' / ' + totalPages;
+  document.getElementById('count-santri').textContent = santri.length;
+  const selects = document.querySelectorAll('.santri-select, #tahfiz-santri');
+  selects.forEach(sel=>{ const cur=sel.value; sel.innerHTML='<option value="">-- pilih --</option>'; santri.forEach(s=>{ const opt=document.createElement('option'); opt.value=s.id; opt.textContent=s.nama+' • '+s.kelas; sel.appendChild(opt); }); if(cur) sel.value=cur; });
+  updateAllStatusBadges(); renderJuzListFor(tahfizSelect.value);
+}
+
+function renderPenilaian(){
+  penilaianTableBody.innerHTML='';
+  penilaian.slice().reverse().forEach(p=>{ const s = santri.find(x=>x.id===p.santriId); const tr=document.createElement('tr'); tr.innerHTML=`<td>${escapeHtml(p.kitab)}</td><td>${escapeHtml(s? s.nama:'—')}</td><td>${p.tahap}</td><td>${escapeHtml(p.note||'')}</td><td>${p.time}</td><td><button class="btn-ghost btn-cancel-entry" data-id="${p.id}" type="button">Batalkan</button></td>`; penilaianTableBody.appendChild(tr); });
+  document.getElementById('count-penilaian').textContent = penilaian.length;
+}
+
+/* Render Juz list and set button text based on active state */
+function renderJuzListFor(sid){
+  juzListEl.innerHTML=''; if(!sid) return;
+  const list = (tahfiz[sid]||[]).slice().sort((a,b)=>a.juzNumber-b.juzNumber);
+  list.forEach(j=>{
+    const totalBlocks=j.pages.reduce((acc,p)=>acc+p.blocks.length,0);
+    const doneBlocks=j.pages.reduce((acc,p)=>acc+p.blocks.filter(b=>b.status==='done').length,0);
+    const pct = totalBlocks? Math.round(100*doneBlocks/totalBlocks):0;
+    const div=document.createElement('div');
+    div.className='juz-item';
+    div.style.display='flex'; div.style.justifyContent='space-between'; div.style.alignItems='center';
+    div.style.padding='10px'; div.style.borderRadius='10px'; div.style.border='1px solid #eef4fb'; div.style.background='#fff';
+    const btnId = 'btn-juz-' + j.juzNumber;
+    div.innerHTML = `
+      <div>
+        <div style="font-weight:700">Juz ${j.juzNumber}</div>
+        <div class="small">${j.pages.length} halaman • ${totalBlocks} blok • Selesai ${doneBlocks} (${pct}%)</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="${btnId}" class="btn-open-juz" data-juz="${j.juzNumber}" type="button">
+          <span class="label">Buka</span>
+          <span class="chev">▾</span>
+        </button>
+      </div>`;
+    juzListEl.appendChild(div);
+  });
+
+  const activeBtn = juzListEl.querySelector('.btn-open-juz.active');
+  if(activeBtn){
+    activeBtn.querySelector('.label').textContent = 'Tutup';
+  }
+
+  const sum = getTahfizSummary(sid);
+  blocksDoneEl.textContent = sum.done;
+  blocksTotalEl.textContent = sum.total;
+  const pctAll = sum.total? Math.round(100*sum.done/sum.total):0;
+  tahfizProgressBar.style.width = pctAll + '%';
+  document.getElementById('count-blok').textContent = Object.values(tahfiz).flat().reduce((acc,jlist)=>acc + jlist.reduce((a,j)=>a + j.pages.reduce((b,p)=>b + p.blocks.length,0),0),0);
+}
+
+/* Render Juz detail with pagination */
+function renderJuzDetail(sid,juzNumber){
+  juzDetailArea.classList.remove('hidden'); juzDetailArea.classList.add('visible');
+  juzDetailArea.innerHTML=''; if(!sid){ juzDetailArea.innerHTML='<div class="small">Pilih santri terlebih dahulu.</div>'; return; }
+  const list = tahfiz[sid] || [];
+  const juz = list.find(j => j.juzNumber === juzNumber);
+  if(!juz){ juzDetailArea.innerHTML = '<div class="small">Juz tidak ditemukan.</div>'; return; }
+
+  const state = ensurePageViewState(sid, juzNumber);
+  state.pagesPerView = parseInt(pagesPerViewSelect.value,10) || state.pagesPerView || 5;
+  const pages = juz.pages || [];
+  const totalPages = pages.length;
+  const start = Math.max(0, Math.min(state.startIndex, totalPages - 1));
+  state.startIndex = start;
+
+  const header = document.createElement('div');
+  header.style.display='flex'; header.style.justifyContent='space-between'; header.style.alignItems='center';
+  header.innerHTML = `<div style="font-weight:700">Detail Juz ${juzNumber}</div><div class="small">Halaman: ${totalPages} • Blok per halaman: ${BLOCK_COLORS.length}</div>`;
+  juzDetailArea.appendChild(header);
+
+  const ppv = state.pagesPerView;
+  const groupIndex = Math.floor(state.startIndex / ppv);
+  const groupStart = groupIndex * ppv;
+  const groupEnd = Math.min(groupStart + ppv, totalPages);
+  pagesGroupInfo.textContent = `${groupStart+1}–${groupEnd} dari ${totalPages}`;
+
+  for(let i = groupStart; i < groupEnd; i++){
+    const page = pages[i];
+    const pageWrap = document.createElement('div');
+    pageWrap.style.marginTop = '12px';
+    pageWrap.innerHTML = `<div style="font-weight:600;margin-bottom:6px">Halaman ${page.pageNumber}</div>`;
+    const table = document.createElement('table');
+    table.className = 'block-table';
+    table.innerHTML = `<thead><tr><th style="width:60px">No</th><th>Warna</th><th style="width:120px">Status</th><th>Catatan</th><th style="width:220px">Aksi</th></tr></thead><tbody></tbody>`;
+    const tbody = table.querySelector('tbody');
+
+    page.blocks.forEach((b, idx) => {
+      const color = BLOCK_COLORS[b.colorIndex] || {name:'-', color:'#ddd'};
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${idx+1}</td>
+        <td><span class="color-dot" data-color="${b.colorIndex}"></span>${escapeHtml(color.name)}</td>
+        <td>${b.status==='done' ? '<span class="status-done">Selesai</span>' : '<span class="status-todo">Belum</span>'}</td>
+        <td><div class="small block-note">${escapeHtml(b.note||'')}</div></td>
+        <td>
+          <button class="btn-small btn-toggle-block" data-juz="${juzNumber}" data-page="${page.pageNumber}" data-id="${b.id}">${b.status==='done' ? 'Batal' : 'Selesai'}</button>
+          <button class="btn-note btn-small" data-juz="${juzNumber}" data-page="${page.pageNumber}" data-id="${b.id}">Catatan</button>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+
+    pageWrap.appendChild(table);
+    juzDetailArea.appendChild(pageWrap);
+  }
+}
+
+/* ===== Initial sample data if empty ===== */
+if(!santri.length){
+  santri.push({id:uid('s'),nama:'Arif',kelas:'7'});
+  santri.push({id:uid('s'),nama:'Rasyid',kelas:'8'});
+  santri.push({id:uid('s'),nama:'Ahmad',kelas:'8'});
+  saveJSON(LS_SANTRI,santri);
+}
+renderSantri();
+renderPenilaian();
+renderJuzListFor(tahfizSelect.value);
+updateAllStatusBadges();
+
+/* ===== Event delegation ===== */
+document.addEventListener('click', (e) => {
+  const delBtn = e.target.closest('.btn-delete');
+  if(delBtn){ const id = delBtn.dataset.id; if(!confirm('Hapus santri ini?')) return; santri = santri.filter(x=>x.id!==id); penilaian = penilaian.filter(p=>p.santriId!==id); delete tahfiz[id]; saveJSON(LS_SANTRI,santri); saveJSON(LS_PENILAIAN,penilaian); saveJSON(LS_TAHFIZ,tahfiz); renderSantri(); renderPenilaian(); renderJuzListFor(tahfizSelect.value); return; }
+
+  const cancelEntry = e.target.closest('.btn-cancel-entry');
+  if(cancelEntry){ const id = cancelEntry.dataset.id; const entry = penilaian.find(p=>p.id===id); if(!entry) return; if(!confirm('Batalkan entri: ' + entry.kitab + ' • Tahap ' + entry.tahap + '?')) return; penilaian = penilaian.filter(p=>p.id!==id); saveJSON(LS_PENILAIAN,penilaian); renderPenilaian(); updateAllStatusBadges(); return; }
+
+  const scoreBtn = e.target.closest('.score-btn');
+  if(scoreBtn){
+    const kEl = scoreBtn.closest('.kitab'); const kitabName = kEl.dataset.kitab; const select = kEl.querySelector('.santri-select'); const sid = select.value;
+    if(!sid){ alert('Pilih santri terlebih dahulu'); return; }
+    const tahap = parseInt(scoreBtn.dataset.stage||'1',10);
+    if(tahap===2 && !hasCompletedStageAtLeast(sid,kitabName,1)){ alert('Tidak bisa memberi Tahap 2 sebelum Tahap 1.'); return; }
+    if(tahap===3 && !hasCompletedStageAtLeast(sid,kitabName,2)){ alert('Tidak bisa memberi Tahap 3 sebelum Tahap 2.'); return; }
+    if(hasExactStage(sid,kitabName,tahap)){ alert('Tahap sudah tercatat.'); return; }
+    penilaian.push({id:uid('p'),kitab:kitabName,santriId:sid,tahap,note:'',time:now()});
+    saveJSON(LS_PENILAIAN,penilaian); renderPenilaian(); updateAllStatusBadges(); alert('Tersimpan.'); return;
+  }
+
+  const viewBtn = e.target.closest('.btn-view');
+  if(viewBtn){ const kitab = viewBtn.dataset.view; const rows = penilaian.filter(p=>p.kitab===kitab).map(p=>{ const s = santri.find(x=>x.id===p.santriId); return `${p.time} — ${s? s.nama:'—'} • Tahap ${p.tahap}`; }).join('\n'); if(!rows) alert('Belum ada penilaian untuk ' + kitab); else alert('Riwayat ' + kitab + '\n\n' + rows); return; }
+
+  /* Toggle open/tutup Juz */
+  const openJuzBtn = e.target.closest('.btn-open-juz');
+  if(openJuzBtn){
+    const sid = tahfizSelect.value;
+    if(!sid) return;
+
+    if(openJuzBtn.classList.contains('active')){
+      openJuzBtn.classList.remove('active');
+      const label = openJuzBtn.querySelector('.label');
+      if(label) label.textContent = 'Buka';
+      juzListEl.querySelectorAll('.btn-open-juz').forEach(b=>b.classList.remove('active'));
+      juzDetailArea.classList.remove('visible'); juzDetailArea.classList.add('hidden');
+      setTimeout(()=>{ juzDetailArea.innerHTML = ''; pagesGroupInfo.textContent = '-'; }, 220);
+      return;
+    }
+
+    juzListEl.querySelectorAll('.btn-open-juz').forEach(b=>{
+      b.classList.remove('active');
+      const lbl = b.querySelector('.label'); if(lbl) lbl.textContent = 'Buka';
+    });
+    openJuzBtn.classList.add('active');
+    const label = openJuzBtn.querySelector('.label');
+    if(label) label.textContent = 'Tutup';
+
+    const juzNum = parseInt(openJuzBtn.dataset.juz,10);
+    ensurePageViewState(sid,juzNum);
+    renderJuzDetail(sid,juzNum);
+    return;
+  }
+
+  const toggleBlockBtn = e.target.closest('.btn-toggle-block');
+  if(toggleBlockBtn){
+    const sid = tahfizSelect.value; if(!sid) return;
+    const juzNum = parseInt(toggleBlockBtn.dataset.juz,10);
+    const pageNum = parseInt(toggleBlockBtn.dataset.page,10);
+    const blockId = toggleBlockBtn.dataset.id;
+    toggleBlockStatus(sid,juzNum,pageNum,blockId);
+    const row = toggleBlockBtn.closest('tr');
+    if(row){
+      const list = tahfiz[sid] || [];
+      const juz = list.find(j=>j.juzNumber===juzNum);
+      const page = juz ? juz.pages.find(p=>p.pageNumber===pageNum) : null;
+      const block = page ? page.blocks.find(b=>b.id===blockId) : null;
+      const isDone = block && block.status === 'done';
+      toggleBlockBtn.textContent = isDone ? 'Batal' : 'Selesai';
+      const statusCell = row.querySelector('td:nth-child(3)');
+      if(statusCell) statusCell.innerHTML = isDone ? '<span class="status-done">Selesai</span>' : '<span class="status-todo">Belum</span>';
+    }
+    const sum = getTahfizSummary(sid);
+    blocksDoneEl.textContent = sum.done; blocksTotalEl.textContent = sum.total;
+    tahfizProgressBar.style.width = (sum.total? Math.round(100*sum.done/sum.total):0) + '%';
+    renderJuzListFor(sid);
+    renderJuzDetail(sid,juzNum);
+    return;
+  }
+
+  const noteBtn = e.target.closest('.btn-note');
+  if(noteBtn){
+    const sid = tahfizSelect.value; if(!sid) return;
+    const juzNum = parseInt(noteBtn.dataset.juz,10);
+    const pageNum = parseInt(noteBtn.dataset.page,10);
+    const id = noteBtn.dataset.id;
+    const list = tahfiz[sid]||[]; const juz = list.find(j=>j.juzNumber===juzNum); if(!juz) return;
+    const page = juz.pages.find(p=>p.pageNumber===pageNum); if(!page) return;
+    const block = page.blocks.find(b=>b.id===id); if(!block) return;
+    const newNote = prompt('Catatan untuk blok (kosong untuk hapus):', block.note||'');
+    if(newNote===null) return;
+    setBlockNote(sid,juzNum,pageNum,id,newNote.trim());
+    renderJuzDetail(sid,juzNum);
+    return;
+  }
+});
+
+/* ===== Other handlers ===== */
+addBtn.addEventListener('click', ()=>{ const nama = santriNamaInput.value.trim(); const kelas = santriKelasInput.value.trim(); if(!nama){ alert('Masukkan nama santri'); santriNamaInput.focus(); return; } const s={id:uid('s'),nama,kelas}; santri.push(s); saveJSON(LS_SANTRI,santri); santriNamaInput.value=''; santriKelasInput.value=''; renderSantri(); });
+
+prevBtn.addEventListener('click', ()=>{ if(santriPage>1){ santriPage--; renderSantri(); } });
+nextBtn.addEventListener('click', ()=>{ const q=(searchInput.value||'').trim().toLowerCase(); const pageSize=parseInt(pageSizeSelect.value,10)||10; const filtered=santri.filter(s=>{ if(!q) return true; return (s.nama||'').toLowerCase().includes(q) || (s.kelas||'').toLowerCase().includes(q); }); const totalPages=Math.max(1,Math.ceil(filtered.length/pageSize)); if(santriPage<totalPages){ santriPage++; renderSantri(); } });
+searchInput.addEventListener('input', ()=>{ santriPage=1; renderSantri(); });
+pageSizeSelect.addEventListener('change', ()=>{ santriPage=1; renderSantri(); });
+
+document.addEventListener('change', (e)=>{ if(e.target && e.target.matches('.santri-select')) updateAllStatusBadges(); });
+
+createJuzBtn.addEventListener('click', ()=>{ const sid = tahfizSelect.value; if(!sid){ alert('Pilih santri terlebih dahulu.'); return; } const juzNum = parseInt(newJuzNumber.value,10); const pages = parseInt(newJuzPages.value,10) || 20; if(!juzNum || juzNum<1 || juzNum>30){ alert('Masukkan nomor Juz antara 1 dan 30.'); return; } const res = createJuzForSantri(sid,juzNum,pages); if(!res.ok){ alert(res.msg); return; } renderJuzListFor(sid); newJuzNumber.value=''; newJuzPages.value=''; alert('Juz ' + juzNum + ' dibuat.'); });
+removeJuzBtn.addEventListener('click', ()=>{ const sid = tahfizSelect.value; if(!sid){ alert('Pilih santri terlebih dahulu.'); return; } const openBtn = juzListEl.querySelector('.btn-open-juz.active'); if(!openBtn){ alert('Buka Juz yang ingin dihapus terlebih dahulu.'); return; } const juzNum = parseInt(openBtn.dataset.juz,10); if(!confirm('Hapus Juz ' + juzNum + ' untuk santri ini?')) return; removeJuzForSantri(sid,juzNum); juzDetailArea.innerHTML=''; renderJuzListFor(sid); });
+
+tahfizSelect.addEventListener('change', ()=>{ renderJuzListFor(tahfizSelect.value); juzDetailArea.innerHTML=''; juzDetailArea.classList.remove('visible'); juzDetailArea.classList.add('hidden'); });
+
+pagesPerViewSelect.addEventListener('change', ()=> {
+  const sid = tahfizSelect.value;
+  const openBtn = juzListEl.querySelector('.btn-open-juz.active');
+  if(!sid || !openBtn) return;
+  const juzNum = parseInt(openBtn.dataset.juz,10);
+  setPagesPerViewFor(sid,juzNum, parseInt(pagesPerViewSelect.value,10));
+  renderJuzDetail(sid,juzNum);
+});
+
+pagesPrevBtn.addEventListener('click', ()=> {
+  const sid = tahfizSelect.value;
+  const openBtn = juzListEl.querySelector('.btn-open-juz.active');
+  if(!sid || !openBtn) return;
+  const juzNum = parseInt(openBtn.dataset.juz,10);
+  const state = ensurePageViewState(sid,juzNum);
+  state.startIndex = Math.max(0, state.startIndex - state.pagesPerView);
+  renderJuzDetail(sid,juzNum);
+});
+
+pagesNextBtn.addEventListener('click', ()=> {
+  const sid = tahfizSelect.value;
+  const openBtn = juzListEl.querySelector('.btn-open-juz.active');
+  if(!sid || !openBtn) return;
+  const juzNum = parseInt(openBtn.dataset.juz,10);
+  const state = ensurePageViewState(sid,juzNum);
+  const list = tahfiz[sid] || [];
+  const juz = list.find(j=>j.juzNumber===juzNum);
+  const totalPages = juz ? juz.pages.length : 0;
+  state.startIndex = Math.min(totalPages - 1, state.startIndex + state.pagesPerView);
+  renderJuzDetail(sid,juzNum);
+});
+
+jumpGoBtn.addEventListener('click', ()=> {
+  const sid = tahfizSelect.value;
+  const openBtn = juzListEl.querySelector('.btn-open-juz.active');
+  if(!sid || !openBtn) return;
+  const juzNum = parseInt(openBtn.dataset.juz,10);
+  const target = parseInt(jumpPageInput.value,10);
+  if(!target || target < 1) { alert('Masukkan nomor halaman valid'); return; }
+  const list = tahfiz[sid] || [];
+  const juz = list.find(j=>j.juzNumber===juzNum);
+  if(!juz){ alert('Juz tidak ditemukan'); return; }
+  const totalPages = juz.pages.length;
+  if(target > totalPages){ alert('Halaman melebihi jumlah halaman'); return; }
+  const state = ensurePageViewState(sid,juzNum);
+  const ppv = state.pagesPerView;
+  const groupIndex = Math.floor((target-1) / ppv);
+  state.startIndex = groupIndex * ppv;
+  renderJuzDetail(sid,juzNum);
+});
+
+/* Update badges */
+function updateAllStatusBadges(){
+  document.querySelectorAll('.kitab').forEach(kEl=>{
+    const kitabName = kEl.dataset.kitab;
+    const sel = kEl.querySelector('.santri-select');
+    const sid = sel ? sel.value : '';
+    const stageListContainer = kEl.querySelector('.stage-list');
+    stageListContainer.innerHTML = '';
+    if(!sid) return;
+    const stages = getCompletedStages(sid,kitabName);
+    stages.forEach(st=>{ const item=document.createElement('div'); item.className='stage-item'; item.style.display='inline-flex'; item.style.alignItems='center'; item.style.gap='8px'; item.style.padding='6px 8px'; item.style.border='1px solid #eef4fb'; item.style.borderRadius='8px'; item.style.marginRight='8px'; item.innerHTML = `Tahap ${st} <button class="btn-ghost cancel-stage" data-sid="${sid}" data-kitab="${kitabName}" data-stage="${st}" type="button">Batalkan</button>`; stageListContainer.appendChild(item); });
+  });
+}
+
+/* Cross-tab sync */
+window.addEventListener('storage', (e) => {
+  if (!e.key) return;
+  if (e.key === LS_TAHFIZ) {
+    tahfiz = loadJSON(LS_TAHFIZ, {});
+    renderJuzListFor(tahfizSelect.value);
+    const openBtn = juzListEl.querySelector('.btn-open-juz.active');
+    if (openBtn) {
+      const juzNum = parseInt(openBtn.dataset.juz, 10);
+      renderJuzDetail(tahfizSelect.value, juzNum);
+    }
+  } else if (e.key === LS_PENILAIAN) {
+    penilaian = loadJSON(LS_PENILAIAN, []);
+    renderPenilaian();
+    updateAllStatusBadges();
+  } else if (e.key === LS_SANTRI) {
+    santri = loadJSON(LS_SANTRI, []);
+    renderSantri();
+  }
+});
+
+/* Expose refresh */
+window.appRefresh = ()=>{ renderSantri(); renderPenilaian(); renderJuzListFor(tahfizSelect.value); updateAllStatusBadges(); };
+
+/* Final sync */
+renderSantri(); renderPenilaian(); renderJuzListFor(tahfizSelect.value); updateAllStatusBadges();
+</script>
+</body>
+</html>
