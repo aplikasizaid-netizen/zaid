@@ -79,6 +79,8 @@
   #juz-detail-area.visible{opacity:1;transform:translateY(0);pointer-events:auto}
 
   @media(max-width:980px){.grid{grid-template-columns:1fr;padding:12px}; .juz-pager{width:100%;justify-content:flex-start}}
+/* Tambahkan di akhir style */ @media (max-width: 980px) { .container { margin: 0 auto; /* otomatis center kiri-kanan */ padding: 12px; /* padding dalam lebih kecil */ max-width: 100%; /* biar tidak melebar melebihi layar */ box-sizing: border-box; } }
+
 </style>
 </head>
 <body>
@@ -690,3 +692,4 @@ renderSantri(); renderPenilaian(); renderJuzListFor(tahfizSelect.value); updateA
 </script>
 </body>
 </html>
+
