@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Manajemen Santri • Penilaian • Tahfiz (Semua Kitab)</title>
+<title>Manajemen Santri • Penilaian • Tahfiz (Sempurna)</title>
 <style>
   :root{
     --bg:#f6f8fa;
@@ -14,18 +14,20 @@
     --danger:#ef4444;
     --success:#16a34a;
     --soft-border:#e6eef6;
-    --glass: rgba(255,255,255,0.6);
-    --shadow: 0 6px 18px rgba(15,23,42,0.06);
+    --shadow:0 6px 18px rgba(15,23,42,0.06);
     --radius:12px;
-    --transition-fast: 140ms;
-    --transition-medium: 220ms;
+    --transition-fast:140ms;
+    --transition-medium:220ms;
   }
 
-  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial; font-size:15px; line-height:1.5; color:#0f1724; background:var(--bg); -webkit-font-smoothing:antialiased}
+  /* Base */
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:var(--bg);color:#0f1724;-webkit-font-smoothing:antialiased}
   header{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;padding:18px 22px;box-shadow:0 6px 18px rgba(11,94,215,0.08)}
   header h1{margin:0;font-size:18px;font-weight:600}
 
-  .container{max-width:1180px;margin:20px auto;padding:18px}
+  /* Container center with max-width */
+  .container{width:100%;max-width:1180px;margin:0 auto;padding:18px;box-sizing:border-box}
+
   .grid{display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start}
   .card{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);border:1px solid var(--soft-border)}
   h2{font-size:16px;margin:0 0 10px 0;color:#0b1220}
@@ -44,14 +46,11 @@
   tbody td{padding:10px;border-bottom:1px solid #f3f6f9}
   tbody tr:hover{background:rgba(59,130,246,0.03)}
 
-  #santri-table thead th:nth-child(1){width:55%}
-  #santri-table thead th:nth-child(2){width:25%}
-  #santri-table thead th:nth-child(3){width:20%}
-
+  /* Juz controls */
   .juz-detail-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px}
   .juz-pager{display:flex;gap:8px;align-items:center;margin-left:auto}
-  .juz-page{padding:8px 10px;border-radius:10px;border:1px solid #e6eef6;background:#fff;cursor:pointer;transition:transform var(--transition-fast) ease, background var(--transition-fast) ease}
-  .juz-page.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;border-color:transparent;transform:scale(1.02)}
+  .juz-page{padding:8px 10px;border-radius:10px;border:1px solid #e6eef6;background:#fff;cursor:pointer}
+  .juz-page.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;border-color:transparent}
 
   .block-table{width:100%;border-collapse:collapse;margin-top:8px}
   .block-table th,.block-table td{padding:8px;border:1px solid #eef4fb;text-align:left}
@@ -62,12 +61,14 @@
   .progress{height:12px;background:#eef6ff;border-radius:999px;overflow:hidden}
   .progress i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width var(--transition-medium) ease}
 
+  /* Softer block colors */
   .color-dot[data-color="0"]{background:#f2c94c}
   .color-dot[data-color="1"]{background:#60a5fa}
   .color-dot[data-color="2"]{background:#6ee7b7}
   .color-dot[data-color="3"]{background:#ffb085}
   .color-dot[data-color="4"]{background:#cdb4ff}
 
+  /* Open/Tutup button */
   .btn-open-juz{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:1px solid #e6eef6;background:#fff;color:var(--accent);cursor:pointer;transition:transform var(--transition-fast) ease, background var(--transition-fast) ease}
   .btn-open-juz:hover{transform:translateY(-2px)}
   .btn-open-juz.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;border-color:transparent;transform:scale(1.02)}
@@ -78,9 +79,35 @@
   #juz-detail-area.hidden{opacity:0;transform:translateY(-6px);pointer-events:none}
   #juz-detail-area.visible{opacity:1;transform:translateY(0);pointer-events:auto}
 
-  @media(max-width:980px){.grid{grid-template-columns:1fr;padding:12px}; .juz-pager{width:100%;justify-content:flex-start}}
-/* Tambahkan di akhir style */ @media (max-width: 980px) { .container { margin: 0 auto; /* otomatis center kiri-kanan */ padding: 12px; /* padding dalam lebih kecil */ max-width: 100%; /* biar tidak melebar melebihi layar */ box-sizing: border-box; } }
+  /* Responsive improvements */
+  @media (max-width:980px) {
+    .grid{grid-template-columns:1fr;gap:18px}
+    .container{padding:12px;max-width:100%}
+    aside .card{position:static;width:100%}
+    /* Stack controls */
+    .juz-detail-controls, .controls-row, .controls-row .left, .controls-row .right {flex-direction:column;align-items:stretch}
+    .controls-row .right {margin-top:8px;justify-content:flex-start}
+    input[type="text"], input[type="number"], select, .santri-select {width:100% !important;box-sizing:border-box}
+    button, .btn-ghost, .btn-small, .btn-note {width:100%;display:block}
+    .juz-item {flex-direction:column;align-items:flex-start;gap:8px}
+    .juz-item > div:last-child {width:100%;display:flex;justify-content:flex-end}
+    #juz-detail-area {margin:10px auto;max-width:760px;padding:6px}
+    table {display:block;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+    .block-table,#penilaian-table {min-width:720px}
+  }
+  @media (max-width:420px) {
+    .block-table, .block-table thead, .block-table tbody, .block-table th, .block-table td, .block-table tr {display:block}
+    .block-table thead {display:none}
+    .block-table tr {margin-bottom:12px;border-radius:10px;background:#fff;box-shadow:0 4px 12px rgba(15,23,42,0.03);padding:10px;border:1px solid #eef4fb}
+    .block-table td {display:flex;justify-content:space-between;padding:8px 6px;border:0}
+    .block-table td::before {content:attr(data-label);color:var(--muted);font-weight:600;margin-right:8px}
+    .btn-small,.btn-note {width:48%;display:inline-block;box-sizing:border-box}
+  }
 
+  /* Small helpers */
+  .kitab {margin-bottom:12px;padding:10px;border-radius:10px;border:1px solid #eef4fb;background:#fff}
+  .stage-item{display:inline-flex;align-items:center;gap:8px;padding:6px 8px;border:1px solid #eef4fb;border-radius:8px;margin-right:8px}
+  .muted{color:var(--muted)}
 </style>
 </head>
 <body>
@@ -90,26 +117,32 @@
   <div class="grid">
     <main>
       <!-- Santri -->
-      <section class="card" id="santri-section">
-        <h2>Daftar Santri- ubah</h2>
+      <section class="card">
+        <h2>1. Daftar Santri</h2>
         <div class="small">Tambah, cari, dan batasi tampilan</div>
 
-        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-          <input id="santri-nama" type="text" placeholder="Nama santri" style="flex:1" />
-          <input id="santri-kelas" type="text" placeholder="Kelas" style="width:140px" />
-          <button id="add-santri" type="button">Tambah</button>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap" class="controls-row">
+          <div class="left" style="display:flex;gap:8px;flex:1">
+            <input id="santri-nama" placeholder="Nama santri" />
+            <input id="santri-kelas" placeholder="Kelas" style="width:140px" />
+          </div>
+          <div class="right">
+            <button id="add-santri">Tambah</button>
+          </div>
         </div>
 
-        <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <input id="santri-search" type="text" placeholder="Cari nama atau kelas..." style="flex:1" />
-          <label class="small">Tampilkan</label>
-          <select id="santri-page-size" style="width:90px">
-            <option value="5">5</option><option value="10" selected>10</option><option value="20">20</option>
-          </select>
-          <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
-            <button id="santri-prev" class="btn-ghost" type="button">Prev</button>
+        <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap" class="controls-row">
+          <div class="left" style="display:flex;gap:8px;align-items:center;flex:1">
+            <input id="santri-search" placeholder="Cari nama atau kelas..." />
+            <label class="small">Tampilkan</label>
+            <select id="santri-page-size" style="width:90px">
+              <option value="5">5</option><option value="10" selected>10</option><option value="20">20</option>
+            </select>
+          </div>
+          <div class="right" style="display:flex;gap:8px;align-items:center">
+            <button id="santri-prev" class="btn-ghost">Prev</button>
             <div id="santri-page-info" class="small">1 / 1</div>
-            <button id="santri-next" class="btn-ghost" type="button">Next</button>
+            <button id="santri-next" class="btn-ghost">Next</button>
           </div>
         </div>
 
@@ -118,14 +151,12 @@
         </div>
       </section>
 
-      <div style="height:12px"></div>
-
-      <!-- Kitab: Tajwid, Ushul Fiqh, Nahwu Sharaf -->
+      <!-- Kitab -->
       <section class="card">
-        <h2>Penilaian Kitab</h2>
+        <h2>2 / 3 / 4 Kitab</h2>
 
         <!-- Tajwid -->
-        <div class="kitab" data-kitab="Tajwid" style="margin-bottom:12px">
+        <div class="kitab" data-kitab="Tajwid">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <div><strong>Kitab Tajwid</strong><div class="small">Penilaian bertahap</div></div>
             <div class="small">Tajwid</div>
@@ -141,7 +172,7 @@
         </div>
 
         <!-- Ushul Fiqh -->
-        <div class="kitab" data-kitab="Ushul Fiqh" style="margin-bottom:12px">
+        <div class="kitab" data-kitab="Ushul Fiqh">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <div><strong>Kitab Ushul Fiqh</strong><div class="small">Penilaian bertahap</div></div>
             <div class="small">Ushul Fiqh</div>
@@ -157,7 +188,7 @@
         </div>
 
         <!-- Nahwu Sharaf -->
-        <div class="kitab" data-kitab="Nahwu Sharaf" style="margin-bottom:12px">
+        <div class="kitab" data-kitab="Nahwu Sharaf">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <div><strong>Kitab Nahwu Sharaf</strong><div class="small">Penilaian bertahap</div></div>
             <div class="small">Nahwu Sharaf</div>
@@ -179,8 +210,6 @@
           </div>
         </div>
       </section>
-
-      <div style="height:12px"></div>
 
       <!-- Tahfiz -->
       <section class="card">
@@ -244,7 +273,7 @@
         <h2>Ringkasan Cepat</h2>
         <div class="small">Jumlah Santri: <span id="count-santri">0</span></div>
         <div class="small">Total Penilaian: <span id="count-penilaian">0</span></div>
-        <div class="small">Total Blok Tahfizd: <span id="count-blok">0</span></div>
+        <div class="small">Total Blok Tahfiz: <span id="count-blok">0</span></div>
       </div>
     </aside>
   </div>
@@ -380,72 +409,36 @@ function renderPenilaian(){
   document.getElementById('count-penilaian').textContent = penilaian.length;
 }
 
-/* Render Juz list and set button text based on active state */
 function renderJuzListFor(sid){
   juzListEl.innerHTML=''; if(!sid) return;
   const list = (tahfiz[sid]||[]).slice().sort((a,b)=>a.juzNumber-b.juzNumber);
-  list.forEach(j=>{
-    const totalBlocks=j.pages.reduce((acc,p)=>acc+p.blocks.length,0);
-    const doneBlocks=j.pages.reduce((acc,p)=>acc+p.blocks.filter(b=>b.status==='done').length,0);
-    const pct = totalBlocks? Math.round(100*doneBlocks/totalBlocks):0;
-    const div=document.createElement('div');
-    div.className='juz-item';
-    div.style.display='flex'; div.style.justifyContent='space-between'; div.style.alignItems='center';
-    div.style.padding='10px'; div.style.borderRadius='10px'; div.style.border='1px solid #eef4fb'; div.style.background='#fff';
-    const btnId = 'btn-juz-' + j.juzNumber;
-    div.innerHTML = `
-      <div>
-        <div style="font-weight:700">Juz ${j.juzNumber}</div>
-        <div class="small">${j.pages.length} halaman • ${totalBlocks} blok • Selesai ${doneBlocks} (${pct}%)</div>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <button id="${btnId}" class="btn-open-juz" data-juz="${j.juzNumber}" type="button">
-          <span class="label">Buka</span>
-          <span class="chev">▾</span>
-        </button>
-      </div>`;
-    juzListEl.appendChild(div);
-  });
-
-  const activeBtn = juzListEl.querySelector('.btn-open-juz.active');
-  if(activeBtn){
-    activeBtn.querySelector('.label').textContent = 'Tutup';
-  }
-
-  const sum = getTahfizSummary(sid);
-  blocksDoneEl.textContent = sum.done;
-  blocksTotalEl.textContent = sum.total;
-  const pctAll = sum.total? Math.round(100*sum.done/sum.total):0;
-  tahfizProgressBar.style.width = pctAll + '%';
+  list.forEach(j=>{ const totalBlocks=j.pages.reduce((acc,p)=>acc+p.blocks.length,0); const doneBlocks=j.pages.reduce((acc,p)=>acc+p.blocks.filter(b=>b.status==='done').length,0); const pct = totalBlocks? Math.round(100*doneBlocks/totalBlocks):0; const div=document.createElement('div'); div.className='juz-item'; div.style.display='flex'; div.style.justifyContent='space-between'; div.style.alignItems='center'; div.style.padding='10px'; div.style.borderRadius='10px'; div.style.border='1px solid #eef4fb'; div.style.background='#fff'; const btnId = 'btn-juz-' + j.juzNumber; div.innerHTML=`<div><div style="font-weight:700">Juz ${j.juzNumber}</div><div class="small">${j.pages.length} halaman • ${totalBlocks} blok • Selesai ${doneBlocks} (${pct}%)</div></div><div style="display:flex;gap:8px;align-items:center"><button id="${btnId}" class="btn-open-juz" data-juz="${j.juzNumber}" type="button"><span class="label">Buka</span><span class="chev">▾</span></button></div>`; juzListEl.appendChild(div); });
+  const activeBtn = juzListEl.querySelector('.btn-open-juz.active'); if(activeBtn){ activeBtn.querySelector('.label').textContent = 'Tutup'; }
+  const sum = getTahfizSummary(sid); blocksDoneEl.textContent = sum.done; blocksTotalEl.textContent = sum.total; const pctAll = sum.total? Math.round(100*sum.done/sum.total):0; tahfizProgressBar.style.width = pctAll + '%';
   document.getElementById('count-blok').textContent = Object.values(tahfiz).flat().reduce((acc,jlist)=>acc + jlist.reduce((a,j)=>a + j.pages.reduce((b,p)=>b + p.blocks.length,0),0),0);
 }
 
-/* Render Juz detail with pagination */
 function renderJuzDetail(sid,juzNumber){
   juzDetailArea.classList.remove('hidden'); juzDetailArea.classList.add('visible');
   juzDetailArea.innerHTML=''; if(!sid){ juzDetailArea.innerHTML='<div class="small">Pilih santri terlebih dahulu.</div>'; return; }
   const list = tahfiz[sid] || [];
   const juz = list.find(j => j.juzNumber === juzNumber);
   if(!juz){ juzDetailArea.innerHTML = '<div class="small">Juz tidak ditemukan.</div>'; return; }
-
   const state = ensurePageViewState(sid, juzNumber);
   state.pagesPerView = parseInt(pagesPerViewSelect.value,10) || state.pagesPerView || 5;
   const pages = juz.pages || [];
   const totalPages = pages.length;
   const start = Math.max(0, Math.min(state.startIndex, totalPages - 1));
   state.startIndex = start;
-
   const header = document.createElement('div');
   header.style.display='flex'; header.style.justifyContent='space-between'; header.style.alignItems='center';
   header.innerHTML = `<div style="font-weight:700">Detail Juz ${juzNumber}</div><div class="small">Halaman: ${totalPages} • Blok per halaman: ${BLOCK_COLORS.length}</div>`;
   juzDetailArea.appendChild(header);
-
   const ppv = state.pagesPerView;
   const groupIndex = Math.floor(state.startIndex / ppv);
   const groupStart = groupIndex * ppv;
   const groupEnd = Math.min(groupStart + ppv, totalPages);
   pagesGroupInfo.textContent = `${groupStart+1}–${groupEnd} dari ${totalPages}`;
-
   for(let i = groupStart; i < groupEnd; i++){
     const page = pages[i];
     const pageWrap = document.createElement('div');
@@ -455,24 +448,23 @@ function renderJuzDetail(sid,juzNumber){
     table.className = 'block-table';
     table.innerHTML = `<thead><tr><th style="width:60px">No</th><th>Warna</th><th style="width:120px">Status</th><th>Catatan</th><th style="width:220px">Aksi</th></tr></thead><tbody></tbody>`;
     const tbody = table.querySelector('tbody');
-
     page.blocks.forEach((b, idx) => {
       const color = BLOCK_COLORS[b.colorIndex] || {name:'-', color:'#ddd'};
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${idx+1}</td>
-        <td><span class="color-dot" data-color="${b.colorIndex}"></span>${escapeHtml(color.name)}</td>
-        <td>${b.status==='done' ? '<span class="status-done">Selesai</span>' : '<span class="status-todo">Belum</span>'}</td>
-        <td><div class="small block-note">${escapeHtml(b.note||'')}</div></td>
-        <td>
+      tr.innerHTML = `<td data-label="No">${idx+1}</td>
+        <td data-label="Warna"><span class="color-dot" data-color="${b.colorIndex}"></span>${escapeHtml(color.name)}</td>
+        <td data-label="Status">${b.status==='done' ? '<span class="status-done">Selesai</span>' : '<span class="status-todo">Belum</span>'}</td>
+        <td data-label="Catatan"><div class="small block-note">${escapeHtml(b.note||'')}</div></td>
+        <td data-label="Aksi">
           <button class="btn-small btn-toggle-block" data-juz="${juzNumber}" data-page="${page.pageNumber}" data-id="${b.id}">${b.status==='done' ? 'Batal' : 'Selesai'}</button>
           <button class="btn-note btn-small" data-juz="${juzNumber}" data-page="${page.pageNumber}" data-id="${b.id}">Catatan</button>
         </td>`;
       tbody.appendChild(tr);
     });
-
     pageWrap.appendChild(table);
     juzDetailArea.appendChild(pageWrap);
   }
+  setTimeout(()=> { juzDetailArea.scrollIntoView({behavior:'smooth', block:'start'}); }, 120);
 }
 
 /* ===== Initial sample data if empty ===== */
@@ -515,25 +507,17 @@ document.addEventListener('click', (e) => {
   if(openJuzBtn){
     const sid = tahfizSelect.value;
     if(!sid) return;
-
     if(openJuzBtn.classList.contains('active')){
       openJuzBtn.classList.remove('active');
-      const label = openJuzBtn.querySelector('.label');
-      if(label) label.textContent = 'Buka';
+      const label = openJuzBtn.querySelector('.label'); if(label) label.textContent = 'Buka';
       juzListEl.querySelectorAll('.btn-open-juz').forEach(b=>b.classList.remove('active'));
       juzDetailArea.classList.remove('visible'); juzDetailArea.classList.add('hidden');
       setTimeout(()=>{ juzDetailArea.innerHTML = ''; pagesGroupInfo.textContent = '-'; }, 220);
       return;
     }
-
-    juzListEl.querySelectorAll('.btn-open-juz').forEach(b=>{
-      b.classList.remove('active');
-      const lbl = b.querySelector('.label'); if(lbl) lbl.textContent = 'Buka';
-    });
+    juzListEl.querySelectorAll('.btn-open-juz').forEach(b=>{ b.classList.remove('active'); const lbl = b.querySelector('.label'); if(lbl) lbl.textContent = 'Buka'; });
     openJuzBtn.classList.add('active');
-    const label = openJuzBtn.querySelector('.label');
-    if(label) label.textContent = 'Tutup';
-
+    const label = openJuzBtn.querySelector('.label'); if(label) label.textContent = 'Tutup';
     const juzNum = parseInt(openJuzBtn.dataset.juz,10);
     ensurePageViewState(sid,juzNum);
     renderJuzDetail(sid,juzNum);
@@ -649,7 +633,7 @@ jumpGoBtn.addEventListener('click', ()=> {
   renderJuzDetail(sid,juzNum);
 });
 
-/* Update badges */
+/* Update badges and stage-list UI */
 function updateAllStatusBadges(){
   document.querySelectorAll('.kitab').forEach(kEl=>{
     const kitabName = kEl.dataset.kitab;
@@ -659,9 +643,24 @@ function updateAllStatusBadges(){
     stageListContainer.innerHTML = '';
     if(!sid) return;
     const stages = getCompletedStages(sid,kitabName);
-    stages.forEach(st=>{ const item=document.createElement('div'); item.className='stage-item'; item.style.display='inline-flex'; item.style.alignItems='center'; item.style.gap='8px'; item.style.padding='6px 8px'; item.style.border='1px solid #eef4fb'; item.style.borderRadius='8px'; item.style.marginRight='8px'; item.innerHTML = `Tahap ${st} <button class="btn-ghost cancel-stage" data-sid="${sid}" data-kitab="${kitabName}" data-stage="${st}" type="button">Batalkan</button>`; stageListContainer.appendChild(item); });
+    stages.forEach(st=>{ const item=document.createElement('div'); item.className='stage-item'; item.innerHTML = `Tahap ${st} <button class="btn-ghost cancel-stage" data-sid="${sid}" data-kitab="${kitabName}" data-stage="${st}" type="button">Batalkan</button>`; stageListContainer.appendChild(item); });
   });
 }
+
+/* Cancel stage buttons (delegated) */
+document.addEventListener('click', (e) => {
+  const cancelStageBtn = e.target.closest('.cancel-stage');
+  if(cancelStageBtn){
+    const sid = cancelStageBtn.dataset.sid;
+    const kitab = cancelStageBtn.dataset.kitab;
+    const stage = parseInt(cancelStageBtn.dataset.stage,10);
+    if(!confirm(`Batalkan Tahap ${stage} untuk ${kitab}?`)) return;
+    penilaian = penilaian.filter(p=>!(p.santriId===sid && p.kitab===kitab && p.tahap===stage));
+    saveJSON(LS_PENILAIAN,penilaian);
+    renderPenilaian();
+    updateAllStatusBadges();
+  }
+});
 
 /* Cross-tab sync */
 window.addEventListener('storage', (e) => {
@@ -692,5 +691,3 @@ renderSantri(); renderPenilaian(); renderJuzListFor(tahfizSelect.value); updateA
 </script>
 </body>
 </html>
-
-
